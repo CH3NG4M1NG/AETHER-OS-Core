@@ -1,0 +1,1 @@
+savedcmd_/home/aether/AETHER-OS/aether_os/aether-kernel/kernel/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/aether/AETHER-OS/aether_os/aether-kernel/kernel/Module.symvers -T /home/aether/AETHER-OS/aether_os/aether-kernel/kernel/modules.order -i Module.symvers -e 

@@ -1,0 +1,1 @@
+savedcmd_/home/aether/AETHER-OS/aether_os/aether-kernel/kernel/aether_cognitive.mod := printf '%s\n'   aether_cognitive.o | awk '!x[$$0]++ { print("/home/aether/AETHER-OS/aether_os/aether-kernel/kernel/"$$0) }' > /home/aether/AETHER-OS/aether_os/aether-kernel/kernel/aether_cognitive.mod
