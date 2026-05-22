@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Aether-Dark
+Comment=AETHER OS Dark Cyberpunk Theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Aether-Dark
+MetacityTheme=Aether-Dark
+IconTheme=Papirus-Dark
+CursorTheme=Adwaita
+ButtonLayout=close,minimize,maximize:
