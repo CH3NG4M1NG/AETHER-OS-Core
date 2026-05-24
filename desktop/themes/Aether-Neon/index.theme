@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Aether-Neon
+Comment=AETHER OS Neon Rainbow Theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Aether-Neon
+MetacityTheme=Aether-Neon
+IconTheme=Papirus-Dark
+CursorTheme=Adwaita
+ButtonLayout=close,minimize,maximize:

@@ -1,279 +1,210 @@
 #!/bin/bash
-# ============================================================
-#   AETHER OS — Complete Desktop Setup v2.0
-#   Auto-detect environment, install everything
-#   Works on: Ubuntu 22.04/24.04 + XFCE
-# ============================================================
+# AETHER OS Desktop v3.0 — Neon Rainbow Edition
+# One command setup for Ubuntu + XFCE
 
 set -e
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-CYAN='\033[0;36m'
-YELLOW='\033[1;33m'
-BOLD='\033[1m'
-NC='\033[0m'
+RED='\033[0;31m'; GREEN='\033[0;32m'
+CYAN='\033[0;36m'; YELLOW='\033[1;33m'
+MAGENTA='\033[0;35m'; BOLD='\033[1m'; NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOME_DIR="$HOME"
-LOG="$SCRIPT_DIR/install.log"
+H="$HOME"
 
-print_banner() {
-echo -e "${CYAN}"
-echo "  ░█████╗░███████╗████████╗██╗░░██╗███████╗██████╗░"
-echo "  ██╔══██╗██╔════╝╚══██╔══╝██║░░██║██╔════╝██╔══██╗"
-echo "  ███████║█████╗░░░░░██║░░░███████║█████╗░░██████╔╝"
-echo "  ██╔══██║██╔══╝░░░░░██║░░░██╔══██║██╔══╝░░██╔══██╗"
-echo "  ██║░░██║███████╗░░░██║░░░██║░░██║███████╗██║░░██║"
-echo "  ╚═╝░░╚═╝╚══════╝░░░╚═╝░░░╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝"
+echo -e "${MAGENTA}"
+echo "  ╔══════════════════════════════════════════╗"
+echo "  ║   AETHER OS — Neon Rainbow Edition v3    ║"
+echo "  ╚══════════════════════════════════════════╝"
 echo -e "${NC}"
-echo -e "${BOLD}  AETHER OS Desktop v2.0${NC}\n"
-}
 
-print_banner
-
-# ── Detect environment ──
-IS_VM=false
-IS_WSL=false
-if grep -qi microsoft /proc/version 2>/dev/null; then IS_WSL=true; fi
-if dmidecode -s system-product-name 2>/dev/null | grep -qi "virtualbox\|vmware\|kvm\|qemu"; then IS_VM=true; fi
-
-echo -e "${CYAN}[INFO] Environment detection:${NC}"
-echo -e "  WSL: $IS_WSL | VM: $IS_VM"
-echo ""
-
-# ── Step 1: Packages ──
-echo -e "${YELLOW}[1/9] Installing packages...${NC}"
+# ── 1. Packages ──
+echo -e "${YELLOW}[1/8] Packages...${NC}"
 sudo add-apt-repository universe -y 2>/dev/null || true
 sudo apt update -qq
-
-PKGS=(
-    xfce4 xfce4-terminal xfce4-goodies
-    lightdm lightdm-gtk-greeter
-    papirus-icon-theme
-    fonts-jetbrains-mono fonts-noto
-    thunar mousepad
-    python3-gi python3-gi-cairo
-    gir1.2-gtk-4.0 gir1.2-glib-2.0
-    python3-psutil
-    xdg-utils
-    wmctrl xdotool
-    dunst
-    picom
-    feh
-    git curl wget
-    xfce4-whiskermenu-plugin
-    xfce4-battery-plugin
-    xfce4-clipman-plugin
-    network-manager-gnome
-)
-
-# Add VM guest additions if VM
-if [ "$IS_VM" = true ]; then
-    PKGS+=(virtualbox-guest-utils virtualbox-guest-x11)
-fi
-
-sudo apt install -y "${PKGS[@]}" 2>/dev/null || \
-sudo apt install -y xfce4 xfce4-terminal lightdm \
+sudo apt install -y -qq \
+    xfce4 xfce4-terminal lightdm lightdm-gtk-greeter \
+    papirus-icon-theme fonts-jetbrains-mono fonts-noto \
+    thunar mousepad \
     python3-gi python3-gi-cairo gir1.2-gtk-4.0 \
-    python3-psutil wmctrl xdotool fonts-jetbrains-mono \
-    papirus-icon-theme 2>/dev/null || true
+    python3-psutil wmctrl xdotool openbox \
+    librsvg2-bin feh picom dunst \
+    xfce4-whiskermenu-plugin 2>/dev/null || true
+echo -e "${GREEN}[✓] Packages${NC}\n"
 
-echo -e "${GREEN}[✓] Packages done${NC}\n"
+# ── 2. Theme ──
+echo -e "${YELLOW}[2/8] Neon theme...${NC}"
+mkdir -p "$H/.themes"
+cp -r "$SCRIPT_DIR/themes/Aether-Neon" "$H/.themes/" 2>/dev/null || true
+echo -e "${GREEN}[✓] Theme installed${NC}\n"
 
-# ── Step 2: GTK Theme ──
-echo -e "${YELLOW}[2/9] Installing Aether-Dark theme...${NC}"
-mkdir -p "$HOME_DIR/.themes"
-if [ -d "$SCRIPT_DIR/themes/Aether-Dark" ]; then
-    cp -r "$SCRIPT_DIR/themes/Aether-Dark" "$HOME_DIR/.themes/"
-    echo -e "${GREEN}[✓] Theme installed${NC}"
-else
-    echo -e "${YELLOW}[~] Theme files not found, skipping${NC}"
-fi
-echo ""
+# ── 3. Wallpaper ──
+echo -e "${YELLOW}[3/8] Wallpaper...${NC}"
+mkdir -p "$H/.local/share/wallpapers"
+cp "$SCRIPT_DIR/wallpaper/aether-neon.svg" "$H/.local/share/wallpapers/" 2>/dev/null || true
+rsvg-convert -w 1920 -h 1080 \
+    "$H/.local/share/wallpapers/aether-neon.svg" \
+    -o "$H/.local/share/wallpapers/aether-neon.png" 2>/dev/null || \
+convert -size 1920x1080 "gradient:#06061a-#02020a" \
+    "$H/.local/share/wallpapers/aether-neon.png" 2>/dev/null || true
+echo -e "${GREEN}[✓] Wallpaper${NC}\n"
 
-# ── Step 3: Wallpaper ──
-echo -e "${YELLOW}[3/9] Setting up wallpaper...${NC}"
-mkdir -p "$HOME_DIR/.local/share/wallpapers"
-if [ -f "$SCRIPT_DIR/wallpaper/aether-dark.svg" ]; then
-    cp "$SCRIPT_DIR/wallpaper/aether-dark.svg" \
-       "$HOME_DIR/.local/share/wallpapers/"
-    # Convert to PNG
-    sudo apt install -y librsvg2-bin 2>/dev/null || true
-    rsvg-convert -w 1920 -h 1080 \
-        "$HOME_DIR/.local/share/wallpapers/aether-dark.svg" \
-        -o "$HOME_DIR/.local/share/wallpapers/aether-dark.png" 2>/dev/null || \
-    python3 - << 'PYEOF'
-import os
-home = os.path.expanduser("~")
-wp = os.path.join(home, ".local/share/wallpapers/aether-dark.png")
-try:
-    from PIL import Image, ImageDraw
-    img = Image.new('RGB', (1920,1080), (5,5,14))
-    draw = ImageDraw.Draw(img)
-    for x in range(0,1920,80): draw.line([(x,0),(x,1080)],fill=(0,25,35),width=1)
-    for y in range(0,1080,80): draw.line([(0,y),(1920,y)],fill=(0,25,35),width=1)
-    img.save(wp)
-except:
-    pass
-PYEOF
-    echo -e "${GREEN}[✓] Wallpaper ready${NC}"
-fi
-echo ""
+# ── 4. XFCE config ──
+echo -e "${YELLOW}[4/8] XFCE config...${NC}"
+mkdir -p "$H/.config/xfce4/xfconf/xfce-perchannel-xml"
 
-# ── Step 4: XFCE Config ──
-echo -e "${YELLOW}[4/9] XFCE configuration...${NC}"
-mkdir -p "$HOME_DIR/.config/xfce4/xfconf/xfce-perchannel-xml"
+# xsettings
+cat > "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="Aether-Neon"/>
+    <property name="IconThemeName" type="string" value="Papirus-Dark"/>
+  </property>
+  <property name="Xft" type="empty">
+    <property name="Antialias" type="int" value="1"/>
+    <property name="Hinting" type="int" value="1"/>
+    <property name="HintStyle" type="string" value="hintslight"/>
+    <property name="RGBA" type="string" value="rgb"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="FontName" type="string" value="JetBrains Mono 10"/>
+    <property name="MonospaceFontName" type="string" value="JetBrains Mono 11"/>
+    <property name="CursorThemeSize" type="int" value="16"/>
+    <property name="DecorationLayout" type="string" value="close,minimize,maximize:"/>
+  </property>
+</channel>
+EOF
 
-# Copy configs
-if [ -d "$SCRIPT_DIR/config" ]; then
-    # Fix wallpaper path in desktop config
-    sed -i "s|/home/USER/|$HOME_DIR/|g" \
-        "$SCRIPT_DIR/config/xfce4-desktop.xml" 2>/dev/null || true
-    cp "$SCRIPT_DIR/config/"*.xml \
-       "$HOME_DIR/.config/xfce4/xfconf/xfce-perchannel-xml/" 2>/dev/null || true
-fi
+# xfwm4
+cat > "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Aether-Neon"/>
+    <property name="title_font" type="string" value="JetBrains Mono Bold 9"/>
+    <property name="use_compositing" type="bool" value="true"/>
+    <property name="frame_opacity" type="int" value="88"/>
+    <property name="inactive_opacity" type="int" value="90"/>
+    <property name="shadow_opacity" type="int" value="55"/>
+    <property name="show_frame_shadow" type="bool" value="true"/>
+    <property name="borderless_maximize" type="bool" value="true"/>
+    <property name="snap_to_border" type="bool" value="true"/>
+    <property name="corner_radius" type="int" value="6"/>
+  </property>
+</channel>
+EOF
 
-# Apply via xfconf-query
-if command -v xfconf-query &>/dev/null; then
-    xfconf-query -c xsettings -p /Net/ThemeName \
-        --create -t string -s "Aether-Dark" 2>/dev/null || \
-    xfconf-query -c xsettings -p /Net/ThemeName -s "Aether-Dark" 2>/dev/null
-    xfconf-query -c xsettings -p /Net/IconThemeName \
-        --create -t string -s "Papirus-Dark" 2>/dev/null || \
-    xfconf-query -c xsettings -p /Net/IconThemeName -s "Papirus-Dark" 2>/dev/null
-    xfconf-query -c xsettings -p /Gtk/FontName \
-        --create -t string -s "JetBrains Mono 10" 2>/dev/null || \
-    xfconf-query -c xsettings -p /Gtk/FontName -s "JetBrains Mono 10" 2>/dev/null
-    xfconf-query -c xsettings -p /Gtk/CursorThemeSize \
-        --create -t int -s 16 2>/dev/null || \
-    xfconf-query -c xsettings -p /Gtk/CursorThemeSize -s 16 2>/dev/null
-    xfconf-query -c xfwm4 -p /general/theme \
-        --create -t string -s "Aether-Dark" 2>/dev/null || \
-    xfconf-query -c xfwm4 -p /general/theme -s "Aether-Dark" 2>/dev/null
-    xfconf-query -c xfwm4 -p /general/title_font \
-        --create -t string -s "JetBrains Mono Bold 9" 2>/dev/null || true
-    xfconf-query -c xfwm4 -p /general/use_compositing \
-        --create -t bool -s true 2>/dev/null || true
-fi
+# wallpaper
+WP="$H/.local/share/wallpapers/aether-neon.png"
+cat > "$H/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitor0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="$WP"/>
+        </property>
+      </property>
+      <property name="monitorVirtual1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="$WP"/>
+        </property>
+      </property>
+    </property>
+  </property>
+  <property name="desktop-icons" type="empty">
+    <property name="style" type="int" value="0"/>
+  </property>
+</channel>
+EOF
+
 echo -e "${GREEN}[✓] XFCE configured${NC}\n"
 
-# ── Step 5: AETHER Bar ──
-echo -e "${YELLOW}[5/9] Installing AETHER Bar...${NC}"
-mkdir -p "$HOME_DIR/.config/aether"
-cp "$SCRIPT_DIR/aether_bar.py" "$HOME_DIR/.config/aether/"
-cp "$SCRIPT_DIR/aether_launcher.py" "$HOME_DIR/.config/aether/" 2>/dev/null || true
-cp "$SCRIPT_DIR/aether_notifications.py" "$HOME_DIR/.config/aether/" 2>/dev/null || true
-chmod +x "$HOME_DIR/.config/aether/"*.py
-echo -e "${GREEN}[✓] AETHER Bar installed${NC}\n"
+# ── 5. AETHER Bar + Launcher ──
+echo -e "${YELLOW}[5/8] AETHER components...${NC}"
+mkdir -p "$H/.config/aether"
+cp "$SCRIPT_DIR/aether_bar.py"      "$H/.config/aether/"
+cp "$SCRIPT_DIR/aether_launcher.py" "$H/.config/aether/"
+chmod +x "$H/.config/aether/"*.py
+echo -e "${GREEN}[✓] AETHER components${NC}\n"
 
-# ── Step 6: Terminal config ──
-echo -e "${YELLOW}[6/9] Terminal configuration...${NC}"
-mkdir -p "$HOME_DIR/.config/xfce4/terminal"
-cat > "$HOME_DIR/.config/xfce4/terminal/terminalrc" << 'EOF'
+# ── 6. Terminal config ──
+echo -e "${YELLOW}[6/8] Terminal...${NC}"
+mkdir -p "$H/.config/xfce4/terminal"
+cat > "$H/.config/xfce4/terminal/terminalrc" << 'EOF'
 [Configuration]
-BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
-BackgroundDarkness=0.90
-ColorForeground=#00e5ff
-ColorBackground=#050510
-ColorCursor=#00e5ff
+ColorForeground=#c084fc
+ColorBackground=#04040c
+ColorCursor=#a855f7
 ColorCursorUseDefault=FALSE
-ColorPalette=#1a1a2e;#ff1744;#00e676;#ffea00;#2979ff;#e040fb;#00b4d4;#e0e0e0;#424242;#ff5252;#69f0ae;#ffff00;#448aff;#ea80fc;#18ffff;#ffffff
+ColorPalette=#1a0a2e;#ff1744;#00ff88;#ffaa00;#00aaff;#a855f7;#00e5ff;#e0e0e0;#374151;#ff5252;#69f0ae;#ffd740;#448aff;#c084fc;#18ffff;#ffffff
 MiscDefaultGeometry=100x30
 FontName=JetBrains Mono 11
 FontUseSystem=FALSE
 ScrollingBar=TERMINAL_SCROLLBAR_NONE
-TabActivityColor=#00e5ff
+TabActivityColor=#a855f7
+BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
+BackgroundDarkness=0.92
 EOF
-echo -e "${GREEN}[✓] Terminal configured${NC}\n"
+echo -e "${GREEN}[✓] Terminal${NC}\n"
 
-# ── Step 7: Autostart ──
-echo -e "${YELLOW}[7/9] Autostart...${NC}"
-mkdir -p "$HOME_DIR/.config/autostart"
+# ── 7. Autostart ──
+echo -e "${YELLOW}[7/8] Autostart...${NC}"
+mkdir -p "$H/.config/autostart"
 
-cat > "$HOME_DIR/.config/autostart/aether-bar.desktop" << EOF
+# AETHER Bar
+cat > "$H/.config/autostart/aether-bar.desktop" << EOF
 [Desktop Entry]
 Type=Application
 Name=AETHER Bar
-Exec=python3 $HOME_DIR/.config/aether/aether_bar.py
-Hidden=false
-NoDisplay=false
+Exec=python3 $H/.config/aether/aether_bar.py
 X-GNOME-Autostart-enabled=true
 StartupNotify=false
 EOF
 
-# Hide XFCE panel (we use AETHER bar instead)
-cat > "$HOME_DIR/.config/autostart/hide-xfce-panel.desktop" << EOF
+# Openbox as window manager
+cat > "$H/.config/autostart/openbox.desktop" << EOF
 [Desktop Entry]
 Type=Application
-Name=Hide XFCE Panel
-Exec=bash -c "sleep 2 && xfce4-panel --quit 2>/dev/null; true"
-Hidden=false
+Name=Openbox WM
+Exec=openbox --replace
 X-GNOME-Autostart-enabled=true
 StartupNotify=false
 EOF
 
-# Picom compositor
+# Picom
 if command -v picom &>/dev/null; then
-    cat > "$HOME_DIR/.config/autostart/picom.desktop" << EOF
+cat > "$H/.config/autostart/picom.desktop" << EOF
 [Desktop Entry]
 Type=Application
 Name=Picom
-Exec=picom -b --vsync
-Hidden=false
+Exec=picom -b --vsync --backend glx
 X-GNOME-Autostart-enabled=true
 StartupNotify=false
 EOF
 fi
-echo -e "${GREEN}[✓] Autostart set${NC}\n"
 
-# ── Step 8: Picom ──
-echo -e "${YELLOW}[8/9] Compositor...${NC}"
-cat > "$HOME_DIR/.config/picom.conf" << 'EOF'
-backend = "glx";
-vsync = true;
-active-opacity = 1.0;
-inactive-opacity = 0.93;
-frame-opacity = 0.9;
-blur-method = "dual_kawase";
-blur-strength = 3;
-blur-background = false;
-shadow = true;
-shadow-radius = 10;
-shadow-offset-x = -6;
-shadow-offset-y = -6;
-shadow-opacity = 0.5;
-fading = true;
-fade-in-step = 0.06;
-fade-out-step = 0.06;
-corner-radius = 6;
-EOF
-echo -e "${GREEN}[✓] Compositor configured${NC}\n"
+echo -e "${GREEN}[✓] Autostart${NC}\n"
 
-# ── Step 9: Display manager ──
-echo -e "${YELLOW}[9/9] Display manager...${NC}"
+# ── 8. System ──
+echo -e "${YELLOW}[8/8] System...${NC}"
 sudo systemctl set-default graphical.target 2>/dev/null || true
 echo "lightdm" | sudo tee /etc/X11/default-display-manager > /dev/null 2>/dev/null || true
 
-# Fix wallpaper path in config
-if [ -f "$HOME_DIR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" ]; then
-    sed -i "s|/home/USER/|$HOME_DIR/|g" \
-        "$HOME_DIR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+# Apply now if XFCE running
+if command -v xfconf-query &>/dev/null; then
+    xfconf-query -c xsettings -p /Net/ThemeName -s "Aether-Neon" 2>/dev/null || true
+    xfconf-query -c xsettings -p /Net/IconThemeName -s "Papirus-Dark" 2>/dev/null || true
+    xfconf-query -c xfwm4 -p /general/theme -s "Aether-Neon" 2>/dev/null || true
 fi
-echo -e "${GREEN}[✓] Display manager configured${NC}\n"
+echo -e "${GREEN}[✓] System${NC}\n"
 
-# ── Done ──
-echo -e "${GREEN}${BOLD}"
+echo -e "${MAGENTA}${BOLD}"
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║   AETHER Desktop v2.0 — Setup Complete!  ║"
+echo "  ║   AETHER Neon v3 — Setup Complete! ✓     ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo -e "${NC}"
-echo -e "  ${CYAN}Reboot sekarang:${NC} sudo reboot"
-echo ""
-echo -e "  Setelah reboot:"
-echo -e "  ${CYAN}•${NC} Desktop XFCE dengan Aether-Dark theme"
-echo -e "  ${CYAN}•${NC} AETHER Bar auto-start di bottom"
-echo -e "  ${CYAN}•${NC} Terminal dengan AETHER color scheme"
-echo -e "  ${CYAN}•${NC} Picom compositor aktif"
-echo ""
-echo -e "  Manual start bar: ${CYAN}python3 ~/.config/aether/aether_bar.py${NC}"
-echo ""
+echo -e "  ${CYAN}sudo reboot${NC}  ← reboot untuk apply\n"
+echo -e "  Manual start: ${MAGENTA}python3 ~/.config/aether/aether_bar.py${NC}\n"

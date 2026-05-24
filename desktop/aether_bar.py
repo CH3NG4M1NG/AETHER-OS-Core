@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-AETHER Bar v4.0
-Auto-detect screen size + always bottom + full width.
-Modern dark aesthetic.
+AETHER Bar v5.0 — Neon Rainbow Edition
+Auto-detect screen, always bottom, full width.
+Gradient colors, glow effects, modern aesthetic.
 """
 import gi
 gi.require_version('Gtk', '4.0')
@@ -13,108 +13,251 @@ from datetime import datetime
 
 HOME   = os.path.expanduser('~')
 DE_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO   = os.path.join(HOME, 'AETHER-Core')
 
 BAR_CSS = """
 * { font-family: "JetBrains Mono", "Ubuntu Mono", "Courier New", monospace; }
 
 window.aether-bar {
-    background-color: rgba(5, 5, 12, 0.97);
-    border-top: 1px solid rgba(0, 180, 212, 0.3);
+    background-color: rgba(4, 4, 12, 0.97);
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(90deg,
+        #ff0080, #ff4000, #ffaa00, #00ff88,
+        #00aaff, #8800ff, #ff0080) 1;
 }
 
 .bar-root {
-    padding: 0 12px;
-    min-height: 40px;
+    padding: 0 10px;
+    min-height: 42px;
+    background: transparent;
 }
 
-.logo {
-    color: #00e5ff;
-    font-size: 13px;
+/* ── Logo ── */
+.logo-box {
+    background: linear-gradient(135deg,
+        rgba(255,0,128,0.1), rgba(0,170,255,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 4px 14px;
+    margin-right: 8px;
+}
+.logo-text {
+    font-size: 12px;
     font-weight: bold;
-    letter-spacing: 4px;
-    padding: 0 14px;
+    letter-spacing: 3px;
+    color: #ffffff;
 }
 
+/* ── Separator ── */
 .vsep {
-    color: rgba(0,180,212,0.2);
+    color: rgba(255,255,255,0.1);
     font-size: 18px;
     margin: 0 6px;
 }
 
+/* ── Mode ── */
 .mode-box {
-    background: rgba(0,229,255,0.05);
-    border: 1px solid rgba(0,180,212,0.15);
+    background: rgba(136,0,255,0.1);
+    border: 1px solid rgba(136,0,255,0.3);
     border-radius: 6px;
     padding: 3px 10px;
     margin: 0 4px;
 }
-.mode-lbl { color: rgba(0,229,255,0.4); font-size: 7px; letter-spacing: 2px; }
-.mode-val { color: #00e5ff; font-size: 10px; letter-spacing: 3px; font-weight: bold; }
-
-.metric {
-    background: rgba(0,229,255,0.04);
-    border: 1px solid rgba(0,180,212,0.1);
-    border-radius: 6px;
-    padding: 3px 12px;
-    margin: 0 3px;
-    min-width: 65px;
+.mode-lbl {
+    color: rgba(168,85,247,0.6);
+    font-size: 7px;
+    letter-spacing: 2px;
 }
-.metric-lbl { color: rgba(0,229,255,0.35); font-size: 7px; letter-spacing: 2px; }
-.metric-val { color: #00e5ff; font-size: 11px; font-weight: bold; }
-.metric-val.warn   { color: #ffd740; }
-.metric-val.danger { color: #ff5252; }
+.mode-val {
+    color: #a855f7;
+    font-size: 9px;
+    letter-spacing: 3px;
+    font-weight: bold;
+}
 
+/* ── Metrics ── */
+.metric-cpu {
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin: 0 2px;
+    min-width: 60px;
+}
+.metric-ram {
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin: 0 2px;
+    min-width: 60px;
+}
+.metric-gpu {
+    background: rgba(255,170,0,0.05);
+    border: 1px solid rgba(255,170,0,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin: 0 2px;
+    min-width: 60px;
+}
+.metric-temp {
+    background: rgba(255,0,128,0.05);
+    border: 1px solid rgba(255,0,128,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin: 0 2px;
+    min-width: 55px;
+}
+
+.mlbl-cpu   { color: rgba(0,229,255,0.5); font-size: 7px; letter-spacing: 1px; }
+.mlbl-ram   { color: rgba(0,255,136,0.5); font-size: 7px; letter-spacing: 1px; }
+.mlbl-gpu   { color: rgba(255,170,0,0.5); font-size: 7px; letter-spacing: 1px; }
+.mlbl-temp  { color: rgba(255,0,128,0.5); font-size: 7px; letter-spacing: 1px; }
+
+.mval-cpu   { color: #00e5ff; font-size: 11px; font-weight: bold; }
+.mval-ram   { color: #00ff88; font-size: 11px; font-weight: bold; }
+.mval-gpu   { color: #ffaa00; font-size: 11px; font-weight: bold; }
+.mval-temp  { color: #ff6090; font-size: 11px; font-weight: bold; }
+
+.mval-cpu.warn   { color: #ffd740; }
+.mval-cpu.danger { color: #ff5252; }
+.mval-ram.warn   { color: #ffd740; }
+.mval-ram.danger { color: #ff5252; }
+.mval-gpu.warn   { color: #ffd740; }
+.mval-temp.danger { color: #ff1744; }
+
+/* Progress bars */
 progressbar trough {
-    background: rgba(0,229,255,0.08);
+    background: rgba(255,255,255,0.06);
     border-radius: 2px;
     min-height: 2px;
     border: none;
 }
-progressbar progress {
-    background: #00b4d4;
-    border-radius: 2px;
-    min-height: 2px;
-}
-progressbar.warn progress   { background: #ffd740; }
-progressbar.danger progress { background: #ff5252; }
+.pb-cpu progress    { background: #00e5ff; min-height: 2px; border-radius: 2px; }
+.pb-ram progress    { background: #00ff88; min-height: 2px; border-radius: 2px; }
+.pb-gpu progress    { background: #ffaa00; min-height: 2px; border-radius: 2px; }
+progressbar.warn progress   { background: #ffd740 !important; }
+progressbar.danger progress { background: #ff5252 !important; }
 
-.dot-on  { color: #00e676; font-size: 10px; padding: 0 4px; }
-.dot-off { color: #37474f; font-size: 10px; padding: 0 4px; }
-.dot-txt { color: rgba(0,229,255,0.5); font-size: 9px; letter-spacing: 2px; padding-right: 6px; }
-
-.bar-btn {
-    background: rgba(0,229,255,0.05);
-    border: 1px solid rgba(0,180,212,0.2);
-    border-radius: 6px;
-    color: rgba(0,229,255,0.7);
+/* ── Status ── */
+.status-on  {
+    color: #00ff88;
     font-size: 9px;
     letter-spacing: 1px;
-    padding: 4px 14px;
-    margin: 0 2px;
+    padding: 0 4px;
 }
-.bar-btn:hover {
-    background: rgba(0,229,255,0.12);
-    border-color: rgba(0,229,255,0.5);
-    color: #00e5ff;
+.status-off {
+    color: #374151;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 0 4px;
+}
+.status-name {
+    color: rgba(255,255,255,0.35);
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding-right: 4px;
 }
 
+/* ── Buttons ── */
+.btn-chat {
+    background: rgba(255,0,128,0.08);
+    border: 1px solid rgba(255,0,128,0.25);
+    border-radius: 6px;
+    color: #ff6090;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    margin: 0 2px;
+}
+.btn-chat:hover {
+    background: rgba(255,0,128,0.18);
+    border-color: rgba(255,0,128,0.6);
+    color: #ff80a8;
+}
+
+.btn-web {
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    border-radius: 6px;
+    color: #00ff88;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    margin: 0 2px;
+}
+.btn-web:hover {
+    background: rgba(0,255,136,0.18);
+    border-color: rgba(0,255,136,0.6);
+}
+
+.btn-apps {
+    background: rgba(136,0,255,0.08);
+    border: 1px solid rgba(136,0,255,0.3);
+    border-radius: 6px;
+    color: #a855f7;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    margin: 0 2px;
+}
+.btn-apps:hover {
+    background: rgba(136,0,255,0.18);
+    border-color: rgba(168,85,247,0.6);
+    color: #c084fc;
+}
+
+.btn-term {
+    background: rgba(255,170,0,0.08);
+    border: 1px solid rgba(255,170,0,0.25);
+    border-radius: 6px;
+    color: #ffaa00;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    margin: 0 2px;
+}
+.btn-term:hover {
+    background: rgba(255,170,0,0.18);
+    border-color: rgba(255,170,0,0.6);
+}
+
+/* ── Clock ── */
 .clock-t {
-    color: #e0e0e0;
-    font-size: 12px;
+    color: #ffffff;
+    font-size: 13px;
     letter-spacing: 2px;
     font-weight: bold;
     padding: 0 6px;
 }
 .clock-d {
-    color: rgba(224,224,224,0.35);
+    color: rgba(255,255,255,0.3);
     font-size: 8px;
     letter-spacing: 1px;
+    padding: 0 6px;
 }
+
+/* ── Mem count ── */
 .mem-c {
-    color: rgba(0,229,255,0.25);
+    color: rgba(168,85,247,0.4);
     font-size: 8px;
-    padding: 0 8px;
+    padding: 0 6px;
+}
+
+/* ── Workspaces ── */
+.ws-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    color: rgba(255,255,255,0.4);
+    font-size: 9px;
+    min-width: 24px;
+    padding: 2px 6px;
+    margin: 0 1px;
+}
+.ws-btn.active {
+    background: rgba(0,170,255,0.15);
+    border-color: rgba(0,170,255,0.5);
+    color: #00aaff;
 }
 """
 
@@ -124,32 +267,37 @@ MODES = {
 }
 
 def find_browser():
-    for b in ["firefox","firefox-esr","chromium","chromium-browser","google-chrome"]:
+    for b in ["firefox","firefox-esr","chromium","chromium-browser","google-chrome","brave"]:
         r = subprocess.run(["which",b], capture_output=True, text=True)
         if r.returncode == 0: return r.stdout.strip()
     return None
 
 def find_chat():
     for p in [
-        os.path.join(REPO,'interface','terminal_ui.py'),
+        os.path.join(HOME,'AETHER-Core','interface','terminal_ui.py'),
         os.path.join(HOME,'AETHER-OS','aether_os','interface','terminal_ui.py'),
         os.path.join(HOME,'aether','agents','chat.py'),
     ]:
         if os.path.exists(p): return p
     return None
 
-def open_term(title="AETHER", script=None):
-    for term in ["xfce4-terminal","xterm","lxterminal"]:
+def open_term(title="Terminal", script=None):
+    for term in ["xfce4-terminal","xterm","lxterminal","gnome-terminal"]:
         if subprocess.run(["which",term],capture_output=True).returncode != 0:
             continue
         if term == "xfce4-terminal":
-            cmd = [term,"--title",title,"--hide-menubar","--hide-toolbar","--hide-scrollbar"]
+            cmd = [term,"--title",title,"--hide-menubar","--hide-scrollbar"]
             if script: cmd += ["-e",f"python3 {script}"]
+        elif term == "gnome-terminal":
+            cmd = [term,"--title",title]
+            if script: cmd += ["--","python3",script]
         else:
-            cmd = [term,"-title",title,"-bg","#050510","-fg","#00e5ff",
-                   "-fa","Monospace","-fs","11"]
+            cmd = [term,"-title",title,"-bg","#04040c","-fg","#00e5ff",
+                   "-fa","JetBrains Mono","-fs","11"]
             if script: cmd += ["-e",f"python3 {script}"]
-        subprocess.Popen(cmd, cwd=HOME, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.Popen(cmd, cwd=HOME,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL)
         return
 
 
@@ -160,7 +308,8 @@ class AetherBar(Gtk.ApplicationWindow):
         self.set_decorated(False)
         self.set_resizable(False)
         self.add_css_class("aether-bar")
-        self.bar_h = 40
+        self.bar_h = 42
+
         self._apply_css()
         self._detect_screen()
         self._build()
@@ -178,76 +327,73 @@ class AetherBar(Gtk.ApplicationWindow):
         display = Gdk.Display.get_default()
         monitor = display.get_monitors()[0]
         geo = monitor.get_geometry()
-        self.screen_w = geo.width
-        self.screen_h = geo.height
-        self.set_default_size(self.screen_w, self.bar_h)
-        self.set_size_request(self.screen_w, self.bar_h)
+        self.sw = geo.width
+        self.sh = geo.height
+        self.set_default_size(self.sw, self.bar_h)
+        self.set_size_request(self.sw, self.bar_h)
 
     def _on_realize(self, *_):
-        # Position to bottom after window is realized
-        GLib.timeout_add(200,  self._move_to_bottom)
-        GLib.timeout_add(800,  self._move_to_bottom)
-        GLib.timeout_add(2000, self._move_to_bottom)
+        for delay in [300, 800, 2000, 4000]:
+            GLib.timeout_add(delay, self._move_bottom)
 
-    def _move_to_bottom(self):
+    def _move_bottom(self):
+        y = self.sh - self.bar_h
+        # wmctrl
         try:
-            # Method 1: wmctrl
             r = subprocess.run(["wmctrl","-l"], capture_output=True, text=True)
             for line in r.stdout.splitlines():
                 if "AETHER Bar" in line:
                     wid = line.split()[0]
-                    y = self.screen_h - self.bar_h
-                    subprocess.run([
-                        "wmctrl","-ir",wid,
-                        "-e",f"0,0,{y},{self.screen_w},{self.bar_h}"
-                    ], capture_output=True)
-                    # Remove decorations and set as dock
-                    subprocess.run([
-                        "wmctrl","-ir",wid,"-b","add,below"
-                    ], capture_output=True)
+                    subprocess.run(["wmctrl","-ir",wid,
+                        "-e",f"0,0,{y},{self.sw},{self.bar_h}"],
+                        capture_output=True)
                     break
-        except Exception:
-            pass
-
+        except Exception: pass
+        # xdotool
         try:
-            # Method 2: xdotool
-            r = subprocess.run(
-                ["xdotool","search","--name","AETHER Bar"],
+            r = subprocess.run(["xdotool","search","--name","AETHER Bar"],
                 capture_output=True, text=True)
             if r.returncode == 0:
                 wid = r.stdout.strip().split('\n')[0]
-                y = self.screen_h - self.bar_h
-                subprocess.run([
-                    "xdotool","windowmove",wid,"0",str(y)
-                ], capture_output=True)
-                subprocess.run([
-                    "xdotool","windowsize",wid,
-                    str(self.screen_w), str(self.bar_h)
-                ], capture_output=True)
-        except Exception:
-            pass
-
+                subprocess.run(["xdotool","windowmove",wid,"0",str(y)],
+                    capture_output=True)
+                subprocess.run(["xdotool","windowsize",wid,
+                    str(self.sw),str(self.bar_h)],
+                    capture_output=True)
+        except Exception: pass
         return False
 
     def _sep(self):
         s = Gtk.Label(label="│"); s.add_css_class("vsep"); return s
 
-    def _mk_metric(self, lbl, init, bar=True):
+    def _mk_metric(self, kind, lbl, init):
         b = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        b.add_css_class("metric"); b.set_valign(Gtk.Align.CENTER)
-        lb = Gtk.Label(label=lbl); lb.add_css_class("metric-lbl"); b.append(lb)
-        vl = Gtk.Label(label=init); vl.add_css_class("metric-val"); b.append(vl)
+        b.add_css_class(f"metric-{kind}")
+        b.set_valign(Gtk.Align.CENTER)
+
+        lb = Gtk.Label(label=lbl)
+        lb.add_css_class(f"mlbl-{kind}")
+        b.append(lb)
+
+        vl = Gtk.Label(label=init)
+        vl.add_css_class(f"mval-{kind}")
+        b.append(vl)
+
         pb = None
-        if bar:
-            pb = Gtk.ProgressBar(); pb.set_fraction(0)
-            pb.set_size_request(-1, 2); b.append(pb)
+        if kind in ("cpu","ram","gpu"):
+            pb = Gtk.ProgressBar()
+            pb.set_fraction(0)
+            pb.set_size_request(-1, 2)
+            pb.add_css_class(f"pb-{kind}")
+            b.append(pb)
+
         return b, vl, pb
 
-    def _set_m(self, vl, pb, pct, txt):
+    def _set_m(self, vl, pb, pct, txt, kind):
         vl.set_label(txt)
-        for c in ["warn","danger"]:
-            vl.remove_css_class(c)
-            if pb: pb.remove_css_class(c)
+        for c in ["warn","danger"]: vl.remove_css_class(c)
+        if pb:
+            for c in ["warn","danger"]: pb.remove_css_class(c)
         if pct > 90:
             vl.add_css_class("danger")
             if pb: pb.add_css_class("danger")
@@ -256,56 +402,72 @@ class AetherBar(Gtk.ApplicationWindow):
             if pb: pb.add_css_class("warn")
         if pb: pb.set_fraction(min(pct/100, 1.0))
 
-    def _btn(self, lbl, cb):
-        b = Gtk.Button(label=lbl); b.add_css_class("bar-btn")
-        b.connect("clicked", lambda w: cb()); return b
+    def _btn(self, lbl, style, cb):
+        b = Gtk.Button(label=lbl)
+        b.add_css_class(f"btn-{style}")
+        b.connect("clicked", lambda w: cb())
+        return b
 
     def _build(self):
         root = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
-        root.add_css_class("bar-root"); self.set_child(root)
+        root.add_css_class("bar-root")
+        self.set_child(root)
 
-        # LEFT
+        # ── LEFT ──
         left = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         left.set_valign(Gtk.Align.CENTER)
 
-        logo = Gtk.Label(label="⬡ AETHER"); logo.add_css_class("logo")
-        gc = Gtk.GestureClick(); gc.connect("pressed", lambda *_: self._open_launcher())
-        logo.add_controller(gc); left.append(logo); left.append(self._sep())
+        # Logo
+        logo_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
+        logo_box.add_css_class("logo-box")
+        gc = Gtk.GestureClick()
+        gc.connect("pressed", lambda *_: self._open_launcher())
+        logo_txt = Gtk.Label(label="⬡ AETHER")
+        logo_txt.add_css_class("logo-text")
+        logo_box.add_controller(gc)
+        logo_box.append(logo_txt)
+        left.append(logo_box)
+        left.append(self._sep())
 
+        # Mode
         mb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         mb.add_css_class("mode-box"); mb.set_valign(Gtk.Align.CENTER)
         ml = Gtk.Label(label="MODE"); ml.add_css_class("mode-lbl"); mb.append(ml)
         self.mode_v = Gtk.Label(label="IDLE"); self.mode_v.add_css_class("mode-val"); mb.append(self.mode_v)
         left.append(mb)
 
-        self.mem_l = Gtk.Label(label="0 mem"); self.mem_l.add_css_class("mem-c"); left.append(self.mem_l)
+        self.mem_l = Gtk.Label(label=""); self.mem_l.add_css_class("mem-c"); left.append(self.mem_l)
         root.append(left)
 
-        # CENTER
+        # ── CENTER ──
         cx = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         cx.set_hexpand(True); cx.set_halign(Gtk.Align.CENTER); cx.set_valign(Gtk.Align.CENTER)
 
-        cb, self.cpu_v, self.cpu_b = self._mk_metric("CPU","0%")
-        rb, self.ram_v, self.ram_b = self._mk_metric("RAM","0%")
-        gb, self.gpu_v, self.gpu_b = self._mk_metric("GPU","N/A")
-        tb, self.tmp_v, _          = self._mk_metric("TEMP","--°",False)
+        cb, self.cpu_v, self.cpu_b = self._mk_metric("cpu","CPU","0%")
+        rb, self.ram_v, self.ram_b = self._mk_metric("ram","RAM","0%")
+        gb, self.gpu_v, self.gpu_b = self._mk_metric("gpu","GPU","N/A")
+        tb, self.tmp_v, _          = self._mk_metric("temp","TEMP","--°")
+
         for w in [cb,rb,gb,tb]: cx.append(w)
         root.append(cx)
 
-        # RIGHT
+        # ── RIGHT ──
         right = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         right.set_halign(Gtk.Align.END); right.set_valign(Gtk.Align.CENTER)
 
-        self.dot = Gtk.Label(label="●"); self.dot.add_css_class("dot-off")
-        self.dot_txt = Gtk.Label(label="AETHER"); self.dot_txt.add_css_class("dot-txt")
-        right.append(self.dot); right.append(self.dot_txt); right.append(self._sep())
+        # Status
+        self.dot = Gtk.Label(label="●"); self.dot.add_css_class("status-off")
+        self.dot_n = Gtk.Label(label="AETHER"); self.dot_n.add_css_class("status-name")
+        right.append(self.dot); right.append(self.dot_n); right.append(self._sep())
 
-        for lbl, cb in [("CHAT",self._open_chat),("WEB",self._open_web),
-                        ("APPS",self._open_launcher),("TERM",lambda: open_term())]:
-            right.append(self._btn(lbl, cb))
-
+        # Buttons with colors
+        right.append(self._btn("CHAT","chat",self._open_chat))
+        right.append(self._btn("WEB","web",self._open_web))
+        right.append(self._btn("APPS","apps",self._open_launcher))
+        right.append(self._btn("TERM","term",lambda: open_term()))
         right.append(self._sep())
 
+        # Clock
         tbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         tbox.set_valign(Gtk.Align.CENTER)
         self.tl = Gtk.Label(label="00:00:00"); self.tl.add_css_class("clock-t"); tbox.append(self.tl)
@@ -336,17 +498,19 @@ class AetherBar(Gtk.ApplicationWindow):
                      "--format=csv,noheader,nounits"],
                     capture_output=True,text=True,timeout=2)
                 if r.returncode==0:
-                    p=r.stdout.strip().split(", "); gpu,tmp=float(p[0]),float(p[1])
+                    p=r.stdout.strip().split(", ")
+                    gpu,tmp=float(p[0]),float(p[1])
             except: pass
-            GLib.idle_add(self._sys,cpu,ram.percent,ram.used/(1024**3),ram.total/(1024**3),gpu,tmp)
+            GLib.idle_add(self._sys,cpu,ram.percent,
+                          ram.used/(1024**3),ram.total/(1024**3),gpu,tmp)
         threading.Thread(target=f,daemon=True).start()
         return True
 
     def _sys(self,cpu,rp,ru,rt,gpu,tmp):
-        self._set_m(self.cpu_v,self.cpu_b,cpu,f"{cpu:.0f}%")
-        self._set_m(self.ram_v,self.ram_b,rp,f"{ru:.1f}/{rt:.0f}G")
+        self._set_m(self.cpu_v,self.cpu_b,cpu,f"{cpu:.0f}%","cpu")
+        self._set_m(self.ram_v,self.ram_b,rp,f"{ru:.1f}/{rt:.0f}G","ram")
         if gpu>=0:
-            self._set_m(self.gpu_v,self.gpu_b,gpu,f"{gpu:.0f}%")
+            self._set_m(self.gpu_v,self.gpu_b,gpu,f"{gpu:.0f}%","gpu")
             self.tmp_v.set_label(f"{tmp:.0f}°")
             for c in ["warn","danger"]: self.tmp_v.remove_css_class(c)
             if tmp>85: self.tmp_v.add_css_class("danger")
@@ -362,20 +526,19 @@ class AetherBar(Gtk.ApplicationWindow):
         return True
 
     def _aether(self, running):
-        self.dot.remove_css_class("dot-on"); self.dot.remove_css_class("dot-off")
-        self.dot.add_css_class("dot-on" if running else "dot-off")
+        self.dot.remove_css_class("status-on")
+        self.dot.remove_css_class("status-off")
+        self.dot.add_css_class("status-on" if running else "status-off")
         return False
 
     def _t_resize(self):
-        """Check if screen size changed."""
         display = Gdk.Display.get_default()
         geo = display.get_monitors()[0].get_geometry()
-        if geo.width != self.screen_w or geo.height != self.screen_h:
-            self.screen_w = geo.width
-            self.screen_h = geo.height
-            self.set_default_size(self.screen_w, self.bar_h)
-            self.set_size_request(self.screen_w, self.bar_h)
-            self._move_to_bottom()
+        if geo.width != self.sw or geo.height != self.sh:
+            self.sw = geo.width; self.sh = geo.height
+            self.set_default_size(self.sw, self.bar_h)
+            self.set_size_request(self.sw, self.bar_h)
+            self._move_bottom()
         return True
 
     def _open_chat(self): open_term("AETHER Chat", find_chat())
@@ -384,18 +547,18 @@ class AetherBar(Gtk.ApplicationWindow):
         if b: subprocess.Popen([b,"http://localhost:8080"],cwd=HOME,
                                stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     def _open_launcher(self):
-        for p in [os.path.join(DE_DIR,'aether_launcher.py'),
-                  os.path.join(HOME,'aether-de','aether_launcher.py')]:
-            if os.path.exists(p):
-                subprocess.Popen([sys.executable,p],cwd=HOME,
-                                stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-                return
+        lp = os.path.join(DE_DIR,'aether_launcher.py')
+        if os.path.exists(lp):
+            subprocess.Popen([sys.executable,lp],cwd=HOME,
+                            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+            return
+        # Fallback xfce4-appfinder
         subprocess.Popen(["xfce4-appfinder"],cwd=HOME,
                         stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 
 
-class App(Gtk.Application):
-    def __init__(self): super().__init__(application_id="os.aether.bar.v4")
+class BarApp(Gtk.Application):
+    def __init__(self): super().__init__(application_id="os.aether.bar.v5")
     def do_activate(self): AetherBar(self).present()
 
-if __name__ == "__main__": App().run(sys.argv)
+if __name__ == "__main__": BarApp().run(sys.argv)
