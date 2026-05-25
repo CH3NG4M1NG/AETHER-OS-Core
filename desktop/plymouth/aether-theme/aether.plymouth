@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=AETHER OS
+Description=AETHER OS Boot Animation - Neon Rainbow
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/aether
+ScriptFile=/usr/share/plymouth/themes/aether/aether.script

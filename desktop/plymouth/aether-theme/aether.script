@@ -1,0 +1,166 @@
+// AETHER OS Plymouth Boot Theme
+// Custom boot animation dengan neon rainbow
+
+Window.SetBackgroundTopColor(0.016, 0.016, 0.047);
+Window.SetBackgroundBottomColor(0.008, 0.008, 0.020);
+
+// ── State ──
+progress = 0;
+angle    = 0;
+pulse    = 0;
+frame    = 0;
+
+// ── Colors ──
+fun rgb(r,g,b) { return [r/255, g/255, b/255]; }
+
+cyan   = rgb(0,   229, 255);
+purple = rgb(168, 85,  247);
+pink   = rgb(255, 0,   128);
+green  = rgb(0,   255, 136);
+amber  = rgb(255, 170, 0);
+blue   = rgb(0,   170, 255);
+white  = rgb(255, 255, 255);
+
+// ── Logo ──
+logo_img = Image("aether-logo.png");
+if (!logo_img) {
+    logo_img = Image.Text("⬡ AETHER", 1.0, 1.0, 1.0);
+}
+logo = Sprite(logo_img);
+logo.SetX(Window.GetWidth()  / 2 - logo_img.GetWidth()  / 2);
+logo.SetY(Window.GetHeight() / 2 - logo_img.GetHeight() / 2 - 60);
+logo.SetZ(10);
+
+// ── Subtitle ──
+sub_img = Image.Text(
+    "AGI FOUNDATION OS",
+    purple[0], purple[1], purple[2]
+);
+sub = Sprite(sub_img);
+sub.SetX(Window.GetWidth()  / 2 - sub_img.GetWidth()  / 2);
+sub.SetY(Window.GetHeight() / 2 - sub_img.GetHeight() / 2 + 20);
+sub.SetZ(10);
+
+// ── Progress bar ──
+bar_w = 400;
+bar_h = 3;
+bar_x = Window.GetWidth()  / 2 - bar_w / 2;
+bar_y = Window.GetHeight() / 2 + 80;
+
+// Background track
+bar_bg_img = Image.Scale(
+    Image.Text(" ", 0.1, 0.1, 0.2),
+    bar_w, bar_h
+);
+bar_bg = Sprite(bar_bg_img);
+bar_bg.SetX(bar_x);
+bar_bg.SetY(bar_y);
+bar_bg.SetZ(9);
+
+// Progress fill
+bar_fill = Sprite();
+bar_fill.SetX(bar_x);
+bar_fill.SetY(bar_y);
+bar_fill.SetZ(10);
+
+// ── Status text ──
+status_txt = "Initializing AETHER...";
+status_img = Image.Text(status_txt, 0.5, 0.3, 0.6);
+status_spr = Sprite(status_img);
+status_spr.SetX(Window.GetWidth()  / 2 - status_img.GetWidth() / 2);
+status_spr.SetY(bar_y + 16);
+status_spr.SetZ(10);
+
+// ── Version ──
+ver_img = Image.Text("v1.0", 0.2, 0.1, 0.3);
+ver_spr = Sprite(ver_img);
+ver_spr.SetX(Window.GetWidth() - ver_img.GetWidth() - 20);
+ver_spr.SetY(Window.GetHeight() - ver_img.GetHeight() - 20);
+ver_spr.SetZ(10);
+
+// ── Update progress bar fill ──
+fun update_bar(p) {
+    w = Math.Int(bar_w * p);
+    if (w < 2) w = 2;
+
+    // Gradient color based on progress
+    if (p < 0.33) {
+        r = cyan[0]; g = cyan[1]; b = cyan[2];
+    } else if (p < 0.66) {
+        r = purple[0]; g = purple[1]; b = purple[2];
+    } else {
+        r = pink[0]; g = pink[1]; b = pink[2];
+    }
+
+    fill_img = Image.Scale(Image.Text(" ", r, g, b), w, bar_h);
+    bar_fill.SetImage(fill_img);
+}
+
+// ── Pulsing opacity ──
+fun update_pulse() {
+    pulse = pulse + 0.05;
+    if (pulse > 6.28) pulse = 0;
+    opacity = 0.7 + Math.Sin(pulse) * 0.3;
+    logo.SetOpacity(opacity);
+}
+
+// ── Status messages ──
+messages = [
+    "Initializing AETHER...",
+    "Loading cognitive kernel...",
+    "Starting memory engine...",
+    "Connecting AI subsystem...",
+    "Loading knowledge base...",
+    "Starting daemon...",
+    "Launching desktop...",
+    "Welcome to AETHER OS",
+];
+
+fun update_status(p) {
+    idx = Math.Int(p * (messages.Count - 1));
+    if (idx >= messages.Count) idx = messages.Count - 1;
+    msg = messages[idx];
+    new_img = Image.Text(msg, 0.5, 0.3, 0.6);
+    status_spr.SetImage(new_img);
+    status_spr.SetX(Window.GetWidth() / 2 - new_img.GetWidth() / 2);
+}
+
+// ── Main boot callback ──
+fun boot_cb(time) {
+    frame++;
+
+    // Animate pulse
+    update_pulse();
+
+    // Update bar every few frames
+    if (frame % 3 == 0) {
+        update_bar(progress);
+        update_status(progress);
+    }
+}
+
+Plymouth.SetBootProgressFunction(
+    fun(duration, p) {
+        progress = p;
+        update_bar(p);
+        update_status(p);
+    }
+);
+
+Plymouth.SetRefreshFunction(boot_cb);
+
+Plymouth.SetMessageFunction(
+    fun(msg) {
+        new_img = Image.Text(msg, 0.5, 0.3, 0.6);
+        status_spr.SetImage(new_img);
+        status_spr.SetX(Window.GetWidth() / 2 - new_img.GetWidth() / 2);
+    }
+);
+
+Plymouth.SetUpdateStatusFunction(
+    fun(msg) {
+        new_img = Image.Text(msg, 0.4, 0.2, 0.5);
+        status_spr.SetImage(new_img);
+        status_spr.SetX(Window.GetWidth() / 2 - new_img.GetWidth() / 2);
+    }
+);

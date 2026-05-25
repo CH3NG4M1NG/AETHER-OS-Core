@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc"
+                xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <resistance>
+    <strength>10</strength>
+    <screen_edge_strength>20</screen_edge_strength>
+  </resistance>
+
+  <focus>
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+    <focusLast>yes</focusLast>
+    <underMouse>no</underMouse>
+    <focusDelay>200</focusDelay>
+    <raiseOnFocus>no</raiseOnFocus>
+  </focus>
+
+  <placement>
+    <policy>Smart</policy>
+    <center>yes</center>
+    <monitor>Primary</monitor>
+    <primaryMonitor>1</primaryMonitor>
+  </placement>
+
+  <theme>
+    <name>Aether-Neon-OB</name>
+    <titleLayout>NLIMC</titleLayout>
+    <keepBorder>yes</keepBorder>
+    <animateIconify>yes</animateIconify>
+    <font place="ActiveWindow">
+      <name>JetBrains Mono</name>
+      <size>9</size>
+      <weight>Bold</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="InactiveWindow">
+      <name>JetBrains Mono</name>
+      <size>9</size>
+      <weight>Normal</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="MenuHeader">
+      <name>JetBrains Mono</name>
+      <size>9</size>
+      <weight>Bold</weight>
+    </font>
+    <font place="MenuItem">
+      <name>JetBrains Mono</name>
+      <size>9</size>
+    </font>
+  </theme>
+
+  <desktops>
+    <number>4</number>
+    <firstdesk>1</firstdesk>
+    <names>
+      <name>MAIN</name>
+      <name>DEV</name>
+      <name>WEB</name>
+      <name>MEDIA</name>
+    </names>
+    <popupTime>875</popupTime>
+  </desktops>
+
+  <resize>
+    <drawContents>yes</drawContents>
+    <popupShow>Nonpixel</popupShow>
+    <popupPosition>Center</popupPosition>
+  </resize>
+
+  <margins>
+    <top>0</top>
+    <bottom>42</bottom>
+    <left>0</left>
+    <right>0</right>
+  </margins>
+
+  <dock>
+    <position>Bottom</position>
+    <floatingX>0</floatingX>
+    <floatingY>0</floatingY>
+    <noStrut>no</noStrut>
+    <stacking>Above</stacking>
+    <direction>Horizontal</direction>
+    <autoHide>no</autoHide>
+    <hideDelay>300</hideDelay>
+    <showDelay>300</showDelay>
+    <moveButton>Middle</moveButton>
+  </dock>
+
+  <keyboard>
+    <!-- Super+Space = AETHER Launcher -->
+    <keybind key="Super_L">
+      <action name="Execute">
+        <command>python3 /home/aether/.config/aether/aether_launcher.py</command>
+      </action>
+    </keybind>
+
+    <!-- Super+T = Terminal -->
+    <keybind key="Super-t">
+      <action name="Execute">
+        <command>xfce4-terminal</command>
+      </action>
+    </keybind>
+
+    <!-- Super+F = File Manager -->
+    <keybind key="Super-f">
+      <action name="Execute">
+        <command>thunar</command>
+      </action>
+    </keybind>
+
+    <!-- Super+B = Browser -->
+    <keybind key="Super-b">
+      <action name="Execute">
+        <command>firefox</command>
+      </action>
+    </keybind>
+
+    <!-- Alt+F4 = Close window -->
+    <keybind key="A-F4">
+      <action name="Close"/>
+    </keybind>
+
+    <!-- Alt+F5 = Toggle maximize -->
+    <keybind key="A-F5">
+      <action name="ToggleMaximize"/>
+    </keybind>
+
+    <!-- Super+Left = Snap left -->
+    <keybind key="Super-Left">
+      <action name="MoveResizeTo">
+        <x>0</x><y>0</y>
+        <width>50%</width><height>100%</height>
+      </action>
+    </keybind>
+
+    <!-- Super+Right = Snap right -->
+    <keybind key="Super-Right">
+      <action name="MoveResizeTo">
+        <x>-0</x><y>0</y>
+        <width>50%</width><height>100%</height>
+      </action>
+    </keybind>
+
+    <!-- Super+Up = Maximize -->
+    <keybind key="Super-Up">
+      <action name="Maximize"/>
+    </keybind>
+
+    <!-- Super+Down = Restore/Minimize -->
+    <keybind key="Super-Down">
+      <action name="Iconify"/>
+    </keybind>
+
+    <!-- Alt+Tab = Switch windows -->
+    <keybind key="A-Tab">
+      <action name="NextWindow">
+        <finalactions>
+          <action name="Focus"/>
+          <action name="Raise"/>
+          <action name="Unshade"/>
+        </finalactions>
+      </action>
+    </keybind>
+
+    <!-- Ctrl+Alt+T = Terminal -->
+    <keybind key="C-A-t">
+      <action name="Execute">
+        <command>xfce4-terminal</command>
+      </action>
+    </keybind>
+
+    <!-- Print = Screenshot -->
+    <keybind key="Print">
+      <action name="Execute">
+        <command>xfce4-screenshooter</command>
+      </action>
+    </keybind>
+  </keyboard>
+
+  <mouse>
+    <dragThreshold>8</dragThreshold>
+    <doubleClickTime>200</doubleClickTime>
+    <screenEdgeWarpTime>400</screenEdgeWarpTime>
+    <screenEdgeWarpMouse>false</screenEdgeWarpMouse>
+
+    <context name="Frame">
+      <!-- Drag titlebar to move -->
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Move"/>
+      </mousebind>
+      <mousebind button="Left" action="DoubleClick">
+        <action name="ToggleMaximize"/>
+      </mousebind>
+      <!-- Right click = window menu -->
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="ShowMenu"><menu>client-menu</menu></action>
+      </mousebind>
+    </context>
+
+    <context name="Titlebar">
+      <mousebind button="Left" action="Drag">
+        <action name="Move"/>
+      </mousebind>
+      <mousebind button="Left" action="DoubleClick">
+        <action name="ToggleMaximize"/>
+      </mousebind>
+      <mousebind button="Middle" action="Click">
+        <action name="Lower"/>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu"><menu>client-menu</menu></action>
+      </mousebind>
+      <!-- Scroll on titlebar = shade/unshade -->
+      <mousebind button="Up" action="Click">
+        <action name="Shade"/>
+      </mousebind>
+      <mousebind button="Down" action="Click">
+        <action name="Unshade"/>
+      </mousebind>
+    </context>
+
+    <context name="Handle">
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+
+    <context name="BLCorner">
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"><edge>bottom_left</edge></action>
+      </mousebind>
+    </context>
+    <context name="BRCorner">
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"><edge>bottom_right</edge></action>
+      </mousebind>
+    </context>
+    <context name="TLCorner">
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"><edge>top_left</edge></action>
+      </mousebind>
+    </context>
+    <context name="TRCorner">
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"><edge>top_right</edge></action>
+      </mousebind>
+    </context>
+
+    <context name="Client">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Middle" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+    </context>
+
+    <context name="Desktop">
+      <!-- Right click desktop = AETHER menu -->
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu"><menu>root-menu</menu></action>
+      </mousebind>
+      <mousebind button="Middle" action="Press">
+        <action name="ShowMenu"><menu>client-list-combined-menu</menu></action>
+      </mousebind>
+      <!-- Scroll desktop = switch workspace -->
+      <mousebind button="Up" action="Click">
+        <action name="GoToDesktop"><to>previous</to><wrap>yes</wrap></action>
+      </mousebind>
+      <mousebind button="Down" action="Click">
+        <action name="GoToDesktop"><to>next</to><wrap>yes</wrap></action>
+      </mousebind>
+    </context>
+
+    <context name="MoveResize">
+      <mousebind button="Up" action="Click">
+        <action name="GoToDesktop"><to>previous</to><wrap>yes</wrap></action>
+      </mousebind>
+      <mousebind button="Down" action="Click">
+        <action name="GoToDesktop"><to>next</to><wrap>yes</wrap></action>
+      </mousebind>
+      <mousebind button="Escape" action="Press">
+        <action name="Cancel"/>
+      </mousebind>
+    </context>
+  </mouse>
+
+  <menu>
+    <hideDelay>200</hideDelay>
+    <middle>no</middle>
+    <submenuShowDelay>100</submenuShowDelay>
+    <submenuHideDelay>400</submenuHideDelay>
+    <showIcons>yes</showIcons>
+    <file>/home/aether/.config/openbox/menu.xml</file>
+  </menu>
+
+  <applications>
+    <!-- AETHER Bar always on bottom -->
+    <application name="AETHER Bar" type="normal">
+      <layer>below</layer>
+      <skip_taskbar>yes</skip_taskbar>
+      <skip_pager>yes</skip_pager>
+      <decor>no</decor>
+    </application>
+
+    <!-- Launcher no decoration -->
+    <application name="AETHER Launcher" type="normal">
+      <decor>no</decor>
+      <skip_taskbar>yes</skip_taskbar>
+    </application>
+
+    <!-- Terminal default size -->
+    <application name="xfce4-terminal" type="normal">
+      <size><width>100</width><height>30</height></size>
+      <position force="no">
+        <x>center</x><y>center</y>
+      </position>
+    </application>
+  </applications>
+
+</openbox_config>

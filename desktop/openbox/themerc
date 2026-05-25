@@ -1,0 +1,124 @@
+# Aether-Neon Openbox Theme
+# Dark purple/black with neon accents
+# Window borders are thin and colorful
+
+# ── Active window ──
+window.active.title.bg: flat
+window.active.title.bg.color: #08080f
+window.active.title.bg.colorTo: #0d0d1a
+window.active.label.text.color: #c084fc
+window.active.label.bg: flat
+window.active.label.bg.color: #08080f
+
+# Active border = purple glow
+window.active.border.color: #a855f7
+window.active.border.width: 1
+window.active.frame.color: #08080f
+
+# Active buttons
+window.active.button.disabled.bg: flat
+window.active.button.disabled.bg.color: #08080f
+window.active.button.toggled.bg: flat
+window.active.button.toggled.bg.color: rgba(168,85,247,0.2)
+window.active.button.hover.bg: flat
+window.active.button.hover.bg.color: rgba(168,85,247,0.3)
+window.active.button.pressed.bg: flat
+window.active.button.pressed.bg.color: rgba(168,85,247,0.5)
+window.active.button.unpressed.bg: flat
+window.active.button.unpressed.bg.color: rgba(255,255,255,0.05)
+
+# Button images (text based)
+window.active.button.max.unpressed.image.color: #c084fc
+window.active.button.max.hover.image.color: #ffffff
+window.active.button.max.pressed.image.color: #a855f7
+window.active.button.close.unpressed.image.color: #ff6090
+window.active.button.close.hover.image.color: #ff1744
+window.active.button.close.pressed.image.color: #ff0000
+window.active.button.iconify.unpressed.image.color: #00e5ff
+window.active.button.iconify.hover.image.color: #ffffff
+window.active.button.shade.unpressed.image.color: #ffaa00
+window.active.button.shade.hover.image.color: #ffffff
+
+# Grips
+window.active.grip.bg: flat
+window.active.grip.bg.color: #a855f7
+
+# Handle
+window.active.handle.bg: flat
+window.active.handle.bg.color: #a855f7
+
+# ── Inactive window ──
+window.inactive.title.bg: flat
+window.inactive.title.bg.color: #050510
+window.inactive.title.bg.colorTo: #050510
+window.inactive.label.text.color: #374151
+window.inactive.label.bg: flat
+window.inactive.label.bg.color: #050510
+
+window.inactive.border.color: #1a0a2e
+window.inactive.border.width: 1
+window.inactive.frame.color: #050510
+
+window.inactive.button.disabled.bg: flat
+window.inactive.button.disabled.bg.color: #050510
+window.inactive.button.toggled.bg: flat
+window.inactive.button.toggled.bg.color: #050510
+window.inactive.button.hover.bg: flat
+window.inactive.button.hover.bg.color: rgba(255,255,255,0.05)
+window.inactive.button.pressed.bg: flat
+window.inactive.button.pressed.bg.color: rgba(255,255,255,0.1)
+window.inactive.button.unpressed.bg: flat
+window.inactive.button.unpressed.bg.color: #050510
+
+window.inactive.button.max.unpressed.image.color: #374151
+window.inactive.button.close.unpressed.image.color: #374151
+window.inactive.button.iconify.unpressed.image.color: #374151
+
+window.inactive.grip.bg: flat
+window.inactive.grip.bg.color: #1a0a2e
+window.inactive.handle.bg: flat
+window.inactive.handle.bg.color: #1a0a2e
+
+# ── Menu ──
+menu.title.bg: flat
+menu.title.bg.color: #0d0d1a
+menu.title.text.color: #a855f7
+menu.title.text.justify: Center
+
+menu.items.bg: flat
+menu.items.bg.color: #08080f
+menu.items.text.color: #e0e0e0
+menu.items.disabled.text.color: #374151
+
+menu.items.active.bg: flat
+menu.items.active.bg.color: rgba(168,85,247,0.15)
+menu.items.active.text.color: #c084fc
+menu.items.active.disabled.text.color: #374151
+
+menu.separator.color: #1a0a2e
+menu.separator.width: 1
+menu.separator.padding.width: 6
+menu.separator.padding.height: 3
+
+menu.border.color: #a855f7
+menu.border.width: 1
+
+# ── Dimensions ──
+padding.width: 6
+padding.height: 4
+border.width: 1
+window.client.padding.width: 0
+window.client.padding.height: 0
+window.handle.width: 3
+window.label.focus.width: 6
+
+# OSD
+osd.border.color: #a855f7
+osd.border.width: 1
+osd.bg: flat
+osd.bg.color: #0d0d1a
+osd.label.text.color: #c084fc
+osd.hilight.bg: flat
+osd.hilight.bg.color: rgba(168,85,247,0.3)
+osd.unhilight.bg: flat
+osd.unhilight.bg.color: #050510
